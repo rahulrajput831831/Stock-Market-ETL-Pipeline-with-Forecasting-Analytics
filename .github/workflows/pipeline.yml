@@ -1,0 +1,51 @@
+name: Stock ETL Pipeline
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "30 21 * * 1-5"
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run stock pipeline
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_USE_SSL: "true"
+          TICKER: ${{ secrets.TICKER }}
+          LOOKBACK_DAYS: ${{ secrets.LOOKBACK_DAYS }}
+          FORECAST_HORIZON_DAYS: ${{ secrets.FORECAST_HORIZON_DAYS }}
+          RANDOM_FOREST_TEST_SIZE: ${{ secrets.RANDOM_FOREST_TEST_SIZE }}
+          RANDOM_STATE: ${{ secrets.RANDOM_STATE }}
+          MAX_RETRIES: ${{ secrets.MAX_RETRIES }}
+          RETRY_DELAY_SECONDS: ${{ secrets.RETRY_DELAY_SECONDS }}
+        run: |
+          python run_pipeline.py
+
+      - name: Upload pipeline log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-log
+          path: logs/pipeline.log
+          if-no-files-found: ignore

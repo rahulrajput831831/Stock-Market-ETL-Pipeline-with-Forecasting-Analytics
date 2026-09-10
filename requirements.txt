@@ -1,0 +1,9 @@
+pandas==3.0.2
+numpy==2.4.4
+scikit-learn==1.8.0
+statsmodels==0.15.0
+SQLAlchemy==2.0.52
+mysql-connector-python==26.7.0
+python-dotenv==1.2.2
+yfinance==1.7.0
+pytest==9.1.1
