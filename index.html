@@ -1,1 +1,586 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Stock Market ETL Pipeline | Rahul Pathania</title>
+
+  <meta name="description"
+        content="Production-grade Stock Market ETL Pipeline with Aiven MySQL, GitHub Actions, Random Forest, ARIMA forecasting and Power BI analytics.">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: #070b12;
+      color: #e8edf5;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1120px, 92%);
+      margin: auto;
+    }
+
+    /* NAVBAR */
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 11, 18, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid #1c2635;
+    }
+
+    .nav-inner {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      color: #38bdf8;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      color: #9ba8ba;
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    /* HERO */
+
+    .hero {
+      padding: 110px 0 90px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(56,189,248,.12), transparent 38%);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 13px;
+      border: 1px solid #244158;
+      border-radius: 999px;
+      color: #7dd3fc;
+      background: #0c1723;
+      font-size: 13px;
+      margin-bottom: 25px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 12px #22c55e;
+    }
+
+    h1 {
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 1.02;
+      letter-spacing: -3px;
+      margin-bottom: 24px;
+    }
+
+    .gradient {
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: auto;
+      color: #9ba8ba;
+      font-size: 18px;
+    }
+
+    .buttons {
+      margin-top: 34px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 9px;
+      border: 1px solid #263447;
+      background: #111927;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: #e8edf5;
+      color: #07101c;
+      border-color: #e8edf5;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* SECTIONS */
+
+    section {
+      padding: 80px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 45px;
+    }
+
+    .section-title h2 {
+      font-size: 34px;
+      letter-spacing: -1px;
+      margin-bottom: 10px;
+    }
+
+    .section-title p {
+      color: #8e9bad;
+    }
+
+    /* CARDS */
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: #0d141f;
+      border: 1px solid #1c2939;
+      border-radius: 14px;
+      padding: 25px;
+    }
+
+    .card h3 {
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .card p {
+      color: #8e9bad;
+      font-size: 14px;
+    }
+
+    .icon {
+      font-size: 27px;
+      margin-bottom: 16px;
+    }
+
+    /* ARCHITECTURE */
+
+    .architecture {
+      background: #0a1019;
+      border-top: 1px solid #151f2d;
+      border-bottom: 1px solid #151f2d;
+    }
+
+    .pipeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .node {
+      background: #101a28;
+      border: 1px solid #26384e;
+      border-radius: 12px;
+      padding: 20px 22px;
+      text-align: center;
+      min-width: 145px;
+    }
+
+    .node strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .node small {
+      color: #8492a5;
+    }
+
+    .arrow {
+      color: #38bdf8;
+      font-size: 22px;
+    }
+
+    /* TECH STACK */
+
+    .tech {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tech span {
+      padding: 9px 15px;
+      border-radius: 8px;
+      background: #111a28;
+      border: 1px solid #253448;
+      color: #b9c5d5;
+      font-size: 13px;
+    }
+
+    /* STATUS */
+
+    .status {
+      max-width: 800px;
+      margin: auto;
+      padding: 28px;
+      border-radius: 14px;
+      border: 1px solid #1c2939;
+      background: #0d141f;
+      text-align: center;
+    }
+
+    .success {
+      color: #4ade80;
+      font-weight: 700;
+    }
+
+    .status p {
+      color: #8e9bad;
+      margin-top: 8px;
+    }
+
+    /* FOOTER */
+
+    footer {
+      border-top: 1px solid #1b2635;
+      padding: 35px 0;
+      text-align: center;
+      color: #718096;
+      font-size: 13px;
+    }
+
+    @media (max-width: 800px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+
+      .arrow {
+        transform: rotate(90deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+
+  <nav>
+    <div class="container nav-inner">
+      <div class="logo">
+        Rahul<span>Pathania</span>
+      </div>
+
+      <div class="nav-links">
+        <a href="#overview">Overview</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#technology">Technology</a>
+        <a href="#status">Status</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- HERO -->
+
+  <header class="hero">
+    <div class="container">
+
+      <div class="badge">
+        <span class="dot"></span>
+        Automated Cloud Data Pipeline
+      </div>
+
+      <h1>
+        Stock Market<br>
+        <span class="gradient">ETL & Forecasting</span>
+      </h1>
+
+      <p>
+        A production-oriented data engineering and machine learning pipeline
+        that automatically extracts market data, transforms it, stores it in
+        cloud MySQL, generates predictions and produces time-series forecasts.
+      </p>
+
+      <div class="buttons">
+
+        <a
+          class="btn btn-primary"
+          href="https://github.com/rahulrajput831831/Stock-Market-ETL-Pipeline-with-Forecasting-Analytics"
+          target="_blank">
+          View GitHub →
+        </a>
+
+        <a
+          class="btn"
+          href="#architecture">
+          View Architecture
+        </a>
+
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- OVERVIEW -->
+
+  <section id="overview">
+
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Project Overview</h2>
+        <p>From raw market data to analytics and forecasting.</p>
+      </div>
+
+      <div class="cards">
+
+        <div class="card">
+          <div class="icon">📥</div>
+          <h3>Automated Extraction</h3>
+          <p>
+            Market data is retrieved programmatically and processed through
+            the ETL pipeline.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="icon">☁️</div>
+          <h3>Cloud Data Storage</h3>
+          <p>
+            Processed stock data and analytical tables are stored in
+            Aiven-managed MySQL.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="icon">🤖</div>
+          <h3>Machine Learning</h3>
+          <p>
+            Random Forest predictions and ARIMA time-series forecasting are
+            integrated into the pipeline.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ARCHITECTURE -->
+
+  <section id="architecture" class="architecture">
+
+    <div class="container">
+
+      <div class="section-title">
+        <h2>System Architecture</h2>
+        <p>Automated end-to-end data flow</p>
+      </div>
+
+      <div class="pipeline">
+
+        <div class="node">
+          <strong>📈 Yahoo Finance</strong>
+          <small>Market Data</small>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="node">
+          <strong>⚙️ Python ETL</strong>
+          <small>Extract · Transform · Load</small>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="node">
+          <strong>☁️ Aiven MySQL</strong>
+          <small>Cloud Database</small>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="node">
+          <strong>🧠 ML Models</strong>
+          <small>RF + ARIMA</small>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="node">
+          <strong>📊 Power BI</strong>
+          <small>Analytics</small>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- TECHNOLOGY -->
+
+  <section id="technology">
+
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Technology Stack</h2>
+        <p>Tools used to build the pipeline.</p>
+      </div>
+
+      <div class="tech">
+
+        <span>Python</span>
+        <span>Pandas</span>
+        <span>NumPy</span>
+        <span>Scikit-learn</span>
+        <span>Statsmodels</span>
+        <span>ARIMA</span>
+        <span>Random Forest</span>
+        <span>MySQL</span>
+        <span>Aiven</span>
+        <span>SQLAlchemy</span>
+        <span>GitHub Actions</span>
+        <span>Power BI</span>
+        <span>Docker</span>
+        <span>Git</span>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- AUTOMATION -->
+
+  <section id="status" class="architecture">
+
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Pipeline Status</h2>
+        <p>Cloud automation and deployment</p>
+      </div>
+
+      <div class="status">
+
+        <div class="success">
+          ● GitHub Actions Pipeline Operational
+        </div>
+
+        <p>
+          The ETL workflow is configured to execute automatically on
+          weekdays and can also be triggered manually.
+        </p>
+
+        <p>
+          Data is securely loaded into the cloud-hosted Aiven MySQL database
+          using GitHub repository secrets.
+        </p>
+
+        <div class="buttons">
+
+          <a
+            class="btn btn-primary"
+            href="https://github.com/rahulrajput831831/Stock-Market-ETL-Pipeline-with-Forecasting-Analytics/actions"
+            target="_blank">
+            View Workflow →
+          </a>
+
+          <a
+            class="btn"
+            href="https://github.com/rahulrajput831831/Stock-Market-ETL-Pipeline-with-Forecasting-Analytics"
+            target="_blank">
+            Source Code
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <div class="container">
+
+      <p>
+        Built by <strong>Rahul Pathania</strong> · Stock Market ETL &
+        Forecasting Analytics
+      </p>
+
+      <p>
+        Python · Aiven · GitHub Actions · Machine Learning · Power BI
+      </p>
+
+    </div>
+
+  </footer>
+
+</body>
+</html>
