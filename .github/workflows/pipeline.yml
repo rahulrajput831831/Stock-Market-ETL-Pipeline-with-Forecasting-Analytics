@@ -24,6 +24,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Test Aiven connection
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+        run: |
+          echo "Checking database configuration..."
+          echo "DB_HOST is set: $([ -n "$DB_HOST" ] && echo yes || echo no)"
+          echo "DB_PORT is set: $([ -n "$DB_PORT" ] && echo yes || echo no)"
+          echo "DB_HOST length: ${#DB_HOST}"
+          echo "DB_PORT: $DB_PORT"
+
+          echo "Testing DNS resolution..."
+          getent hosts "$DB_HOST"
+
+          echo "Testing MySQL port..."
+          timeout 10 bash -c "</dev/tcp/$DB_HOST/$DB_PORT"
+
+          echo "Aiven database is reachable."
+
       - name: Run stock pipeline
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
